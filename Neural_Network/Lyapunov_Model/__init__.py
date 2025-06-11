@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 
 import Custom_State_Function as cstf
 import Security as sy
@@ -116,20 +115,11 @@ alpha = 0.1
 x1_min = -1
 x1_max = 1
 dx1 = 1e-2
+path = 'C:\\Users\\carpp\\Desktop\\Licenta\\Licenta_final\\Neural_Network'
 
 model = LyapunovNet(input_size, hidden_layer_size, alpha).to(device)
 
-if os.path.exists("lyapunov_model.pt"):
-    model.load_state_dict(torch.load("lyapunov_model.pt", map_location=device))
-    model.eval()
-    print("Model loaded.")
-else:
-    print("Training a new model.")
-
-if sy.verify_model_integrity_encrypted(model):
-    print("Model integrity OK.")
-else:
-    print("WARNING: Model integrity compromised!")
+model = sy.load_model(path , model, device, input_size, hidden_layer_size, alpha)
 
 expr_str1 = input("Please enter the expression string: ")
 expr_str2 = input("Please enter the expression string: ")
@@ -148,8 +138,8 @@ while epoch < 200:
 
     if epoch % 10 == 0:
         # Save model with encrypted hash
-        sy.save_model_with_encrypted_hash(model)
-        sy.save_obfuscated_model(model)
+        sy.save_model_with_encrypted_hash(model,path)
+        sy.save_obfuscated_model(model,path)
 
         # Check model integrity later
         valid = sy.verify_model_integrity_encrypted(model)
