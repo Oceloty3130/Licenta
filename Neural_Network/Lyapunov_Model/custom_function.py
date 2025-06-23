@@ -14,3 +14,12 @@ def custom_cosh(x):
 
 def custom_sinh(x):
     return torch.sinh(x)
+
+def custom_mul(x,y):
+    return x * y
+
+def custom_pow(x,y):
+    return x ** y
+
+def custom_div(x,y):
+    return x / y

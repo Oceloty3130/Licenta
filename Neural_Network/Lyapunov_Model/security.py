@@ -34,18 +34,19 @@ def decrypt_hash(encrypted_hash, secret_key):
 
 def save_model_with_encrypted_hash(model, path):
     folder_path = os.path.join(path, "Model_Parameters")
+    os.makedirs(folder_path, exist_ok=True)
 
-    encrypted_hash_path = os.path.join(folder_path, "model_hash.enc")
     parameters_path = os.path.join(folder_path, "lyapunov_model.pt")
     torch.save(model.state_dict(), parameters_path)
-    hash_val = hash_model_parameters(model)
 
+    hash_val = hash_model_parameters(model)
     generate_secret_key(folder_path)
     secret_key = load_secret_key(folder_path)
     encrypted_hash = encrypt_hash(hash_val, secret_key)
-
-    with open(encrypted_hash_path, 'wb') as f:
+    with open(os.path.join(folder_path, "model_hash.enc"), 'wb') as f:
         f.write(encrypted_hash)
+
+    save_obfuscated_model(model, path)
 
 
 def verify_model_integrity_encrypted(model, folder_path):
